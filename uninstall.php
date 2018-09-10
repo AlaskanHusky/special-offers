@@ -5,42 +5,15 @@ if (!defined('ABSPATH') && !defined('WP_UNINSTALL_PLUGIN')) {
     exit();
 }
 
-specoff_delete_table();
-specoff_delete_images();
+require_once __DIR__ . '/includes/OfferRequester.php';
+require_once __DIR__ . '/includes/FileHelper.php';
 
-function specoff_delete_table()
-{
-    global $wpdb;
-    $table_name = $wpdb->prefix . "so_offers";
+OfferRequester::deleteTable();
 
-    $wpdb->query("DROP TABLE IF EXISTS $table_name");
-}
+$img_dir = __DIR__ . '/img';
 
-function specoff_delete_images()
-{
-    $dir_name = __DIR__ . '/img';
-
-    if (file_exists($dir_name)) {
-        if (!rmdir($dir_name)) {
-            specoff_delete_dir($dir_name);
-        }
+if (file_exists($img_dir)) {
+    if (!rmdir($img_dir)) {
+        FileHelper::deleteDirectory($img_dir);
     }
-}
-
-function specoff_delete_dir($dir_name)
-{
-    $iterator = new RecursiveDirectoryIterator($dir_name);
-    $files = new RecursiveIteratorIterator(
-        $iterator, RecursiveIteratorIterator::CHILD_FIRST
-    );
-
-    foreach ($files as $file) {
-        if (in_array($file->getFilename(), ['..', '.'])) {
-            continue;
-        }
-
-        ($file->isDir()) ? rmdir($file) : unlink($file);
-    }
-
-    rmdir($dir_name);
 }
