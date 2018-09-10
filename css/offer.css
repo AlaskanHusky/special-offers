@@ -1,0 +1,9 @@
+.offer-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    max-height: 200px;
+}
+.offer-title {
+    text-align: center;
+}

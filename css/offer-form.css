@@ -1,0 +1,9 @@
+.offer-form {
+    margin: 0 10% 10% 10%;
+}
+
+.offer-prop {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
