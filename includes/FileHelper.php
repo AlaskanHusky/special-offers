@@ -39,8 +39,15 @@ class FileHelper
 
     public static function deleteFile($path)
     {
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             unlink($path);
+        }
+    }
+
+    public static function createDirectory($path)
+    {
+        if(!file_exists($path)) {
+            mkdir($path, 0700);
         }
     }
 
