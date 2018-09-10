@@ -1,8 +1,9 @@
 <?php
 
+
 class OfferRequester
 {
-    public static function addOne($props)
+    public static function saveOne($props)
     {
         global $wpdb;
         $table_name = self::getTableName();
@@ -17,6 +18,7 @@ class OfferRequester
             ],
             ['%s', '%s', '%s', '%s', '%f', '%f', '%s']
         );
+
         if ($success === false) {
             throw new \Exception('Database request failed: could not add row!');
         }
@@ -27,6 +29,8 @@ class OfferRequester
         global $wpdb;
         $table_name = self::getTableName();
         self::checkConnection();
+        // Protect from SQL injection using the function esc_sql(), because
+        // function $wpdb->prepare() does not work in MariaDB
         $sql = esc_sql('SELECT * FROM '. $table_name . ' WHERE offer_id = '. $id);
         $row = $wpdb->get_row($sql, ARRAY_A);
         if ($row === null) {
@@ -92,7 +96,7 @@ class OfferRequester
 	            `offer_title` VARCHAR(100) NOT NULL,
 	            `offer_description` VARCHAR(500) NULL DEFAULT NULL,
 	            `offer_category` VARCHAR(100) NOT NULL,
-	            `offer_image` VARCHAR(10) NOT NULL,
+	            `offer_image` VARCHAR(15) NOT NULL,
 	            `regular_price` FLOAT UNSIGNED NOT NULL,
 	            `offer_date` VARCHAR(16) NOT NULL,
 	            `special_price` FLOAT UNSIGNED NOT NULL,
