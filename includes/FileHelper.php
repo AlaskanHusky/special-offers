@@ -1,10 +1,12 @@
 <?php
 
+
 class FileHelper
 {
     public static function saveImage($temp_path, $path)
     {
-        move_uploaded_file($temp_path, $path);
+        // copy() is used, because move_uploaded_file() lock file in Windows
+        copy($temp_path, $path);
         chmod($path, 0644);
     }
 
