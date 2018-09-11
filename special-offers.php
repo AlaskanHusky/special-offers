@@ -3,7 +3,7 @@
  * Plugin Name:     Special Offers
  * Plugin URI:      https://github.com/AlaskanHusky/special-offers
  * Description:     Plugin "Special Offers" helps to add blocks with messages about special offers. This can be done via shortcode.
- * Version:         0.5
+ * Version:         0.8
  * Author:          Pavel Yanushevsky
  * Author URI:      https://github.com/AlaskanHusky
  * License:         GPLv3

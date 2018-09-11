@@ -6,6 +6,8 @@ class SpecialOffers
 
     const PLUGIN_NAME = 'special-offers';
 
+    const AJAX_ACTION = 'get_offer';
+
     public function pluginActivation()
     {
         // Check Wordpress version
@@ -36,9 +38,13 @@ class SpecialOffers
         add_shortcode('specoff', ['SpecialOffers', 'addShortcode']);
         // Allows to add shortcodes in widgets
         add_filter('widget_text', 'do_shortcode');
+        add_action('wp_enqueue_scripts', ['SpecialOffers', 'connectOfferStyle']);
         // Add plugin script to pages
         add_action('wp_enqueue_scripts', ['SpecialOffers', 'connectScript']);
-        add_action('wp_enqueue_scripts', ['SpecialOffers', 'connectOfferStyle']);
+        // Activate AJAX hook
+        add_action('wp_ajax_' . self::AJAX_ACTION, ['SpecialOffers', 'getOfferAjax']);
+        // Activate hook for unauthorized user
+        add_action('wp_ajax_nopriv_' . self::AJAX_ACTION, ['SpecialOffers', 'getOfferAjax']);
     }
 
     function addAdminMenu()
@@ -65,40 +71,63 @@ class SpecialOffers
     {
         $style = plugins_url(self::PLUGIN_NAME . '/css/offer-form.css');
         $rand = mt_rand();
-        wp_enqueue_style('specoff-form', $style, [], $rand);
+        wp_enqueue_style('specoff-admin', $style, [], $rand);
     }
 
     function connectOfferStyle()
     {
         $style = plugins_url(self::PLUGIN_NAME . '/css/offer.css');
         $rand = mt_rand();
-        wp_enqueue_style('specoff-form', $style, [], $rand);
+        wp_enqueue_style('specoff-offer', $style, [], $rand);
     }
 
     function connectScript()
     {
-        $script = plugins_url(self::PLUGIN_NAME . '/js/ajax_viewport.js');
+        $script = plugins_url(self::PLUGIN_NAME . '/js/loader.js');
         $rand = mt_rand();
-        wp_enqueue_script('ajax-viewport', $script, [], $rand);
+        wp_enqueue_script('specoff-loader', $script, ['jquery'], $rand, true);
     }
 
     function addShortcode($atts, $content = null)
     {
+        $id = $atts['id'];
+        // Passed to AJAX function required data
+        wp_localize_script('specoff-loader', 'ajaxParams',
+            [
+                // For frontend (not admin)
+                'url' => admin_url('admin-ajax.php'),
+                'action' => self::AJAX_ACTION,
+                'id' => $id,
+            ]
+        );
+        ob_start();
+        echo '<div class="offer-wrapper"></div>';
+        return ob_get_clean();
+    }
+
+    function getOfferAjax()
+    {
         try {
-            $props = OfferService::fromShortcode($atts['id']);
-            $props['offer_image'] = plugins_url(self::PLUGIN_NAME . '/img/') . $props['offer_image'];
+            $props = OfferService::fromShortcode($_POST['offer_id']);
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
+        $props['offer_image'] = plugins_url(self::PLUGIN_NAME . '/img/') . $props['offer_image'];
+
         ob_start();
         require_once plugin_dir_path(__DIR__) . '/views/special_offer.php';
-        return ob_get_clean();
+        echo ob_get_clean();
+        wp_die();
     }
 
     static function autoload()
     {
-        spl_autoload_register(function ($class_name) {
-            require_once $class_name . '.php';
-        });
+        try {
+            spl_autoload_register(function ($class_name) {
+                require_once $class_name . '.php';
+            });
+        } catch (Exception $e) {
+            wp_die($e->getMessage());
+        }
     }
 }
