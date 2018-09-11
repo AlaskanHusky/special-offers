@@ -12,12 +12,14 @@ Special Offers plugin for Wordpress. Plugin allows you to add special offers to 
 
 In admin panel on the plugin page you can add special offers that are stored in database. After adding special offers, you can display them on the blog page via shortcode.
 ## Installation
-####Recommend Requirements
+**Recommend Requirements**
 * WordPress 4.9 or greater
 * PHP 7.2 or greater
 * MySQL 5.6 or greater OR MariaDB 10.0 or greater
 * GD2 PHP extension
-####Installation
+
+**Installation**
+
 Extract the zip file and drop the contents in the `wp-content/plugins/` directory of your WordPress installation.
 Activate the plugin through the 'Plugins' menu in WordPress.
 ## Usage
